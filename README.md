@@ -1,431 +1,545 @@
-# Контент Завод для n8n
+# Content Factory - n8n Workflow для автоматизації збору веб-контенту
 
-## Опис
+---
 
-**Контент Завод (Content Factory)** — це автоматизована система для збору контенту з веб-ресурсів через Apify платформу. Workflow витягує інформацію з новинних сайтів, YouTube, TikTok, Instagram, Telegram та інших джерел, структурує її та зберігає у Google Sheets для подальшої обробки та генерації цільового контенту.
+## 👨‍💻 Автор
 
-## Призначення системи
+**Розробник:** Сергій Щербаков
+**Email:** [sergiyscherbakov@ukr.net](mailto:sergiyscherbakov@ukr.net)
+**Telegram:** [@s_help_2010](https://t.me/s_help_2010)
 
-Контент Завод — це перша частина повного конвеєра контент-маркетингу:
+### ☕ Підтримати розробку
 
-1. ✅ **Збір інформації** з необхідних веб-ресурсів
-2. ✅ **Структурування і збереження** в таблицю
-3. 🔄 Ранжування, сортування і аналіз на відповідність контенту
-4. 🔄 Передача на агентів/мультиагентів для генерації контенту
-5. 🔄 Генерація зображень, відео або аудіо під контент
-6. 🔄 Публікація в соціальні мережі або на сайт
+Якщо цей проєкт допоміг вам зекономити час та автоматизувати збір контенту, ви можете подякувати чашкою кави:
 
-**Поточний workflow** реалізує перші два етапи — автоматичний збір та структурування даних.
+> **💰 Донат на каву:**
+>
+> **USDT (Binance Smart Chain - BEP20)**
+> ```
+> 0xDFD0A23d2FEd7c1ab8A0F9A4a1F8386832B6f95A
+> ```
+>
+> Ваша підтримка допомагає створювати більше корисних інструментів! 🙏
 
-## Архітектура системи
+---
 
-### Основний workflow (Запуск скрейпера)
+## 📋 Про проєкт
+
+**Content Factory** — це потужний n8n workflow для автоматизованого збору та структурування контенту з веб-сайтів. Система використовує Apify для інтелектуального веб-скрейпінгу та Google Sheets для зберігання результатів.
+
+### 🎯 Основні можливості
+
+- ✅ Автоматичний збір контенту з будь-яких веб-сайтів
+- ✅ Конвертація HTML у чистий Markdown формат
+- ✅ Інтеграція з Google Sheets для зручного управління
+- ✅ Використання Apify для надійного скрейпінгу
+- ✅ Підтримка динамічних JavaScript сайтів
+- ✅ Фільтрація непотрібних елементів (реклама, навігація, футери)
+- ✅ Batch обробка множини URL одночасно
+
+### 💡 Для чого це потрібно
+
+- 📊 Збір даних для аналізу конкурентів
+- 📝 Підготовка контенту для AI-обробки
+- 🔍 Моніторинг оновлень на сайтах
+- 📚 Створення баз знань для RAG систем
+- 🤖 Збір навчальних даних для ML моделей
+- 📰 Агрегація новин з різних джерел
+
+---
+
+## 🚀 Швидкий старт
+
+### Крок 1: Імпорт workflow в n8n
+
+> **⚠️ ВАЖЛИВО:** Цей JSON файл потрібно імпортувати у ваш workflow на хмарній платформі [n8n.io](https://n8n.io)
+
+1. Зареєструйтесь або увійдіть на [n8n.io](https://n8n.io)
+2. Перейдіть у розділ **Workflows**
+3. Натисніть кнопку **"Add workflow"** → **"Import from File"**
+4. Виберіть файл **`Урок-11.json`** з цього репозиторію
+5. Натисніть **"Import"**
+6. Workflow з'явиться у вашому робочому просторі
+
+### Крок 2: Налаштування Google Sheets
+
+#### 2.1 Створення вхідної таблиці (Input)
+
+1. Відкрийте [Google Sheets](https://sheets.google.com)
+2. Створіть нову таблицю з назвою **`cc_input`**
+3. Додайте заголовок у комірку A1: **`Website`**
+4. Заповніть колонку URL-адресами сайтів для парсингу:
+
+| Website |
+|---------|
+| https://example.com/page1 |
+| https://example.com/page2 |
+| https://techcrunch.com |
+
+5. Скопіюйте **Document ID** з URL таблиці (це частина URL між `/d/` та `/edit`)
+
+#### 2.2 Створення вихідної таблиці (Output)
+
+1. Створіть ще одну таблицю з назвою **`cc_output`**
+2. Додайте заголовки у перший рядок:
+
+| loadedTime | loadedUrl | text |
+|------------|-----------|------|
+| | | |
+
+3. Скопіюйте **Document ID** цієї таблиці
+
+#### 2.3 Підключення до n8n
+
+1. Відкрийте workflow у n8n
+2. Клікніть на ноду **"Get row(s) in sheet"**
+3. У полі **"Credential to connect with"** → **"Create New Credential"**
+4. Виберіть **"Google Sheets OAuth2 API"**
+5. Натисніть **"Sign in with Google"** та авторизуйтесь
+6. Вставте **Document ID** вхідної таблиці
+7. Виберіть **Sheet Name**: `Лист1`
+
+Повторіть процес для ноди **"Append row in sheet"**, використовуючи Document ID вихідної таблиці.
+
+### Крок 3: Налаштування Apify
+
+#### 3.1 Реєстрація в Apify
+
+1. Перейдіть на [apify.com](https://apify.com)
+2. Зареєструйтесь (доступний безкоштовний план з $5 кредитів)
+3. Після реєстрації перейдіть у [Settings → Integrations](https://console.apify.com/account/integrations)
+4. Скопіюйте ваш **API Token**
+
+#### 3.2 Підключення до n8n
+
+1. У workflow клікніть на ноду **"Run an Actor"**
+2. У полі **"Credential to connect with"** → **"Create New Credential"**
+3. Виберіть **"Apify OAuth2 API"**
+4. Вставте ваш **API Token**
+5. Натисніть **"Save"**
+
+Повторіть для нод **"Get dataset items"** та **"Get dataset items1"**.
+
+### Крок 4: Тестовий запуск
+
+1. Додайте кілька URL у вашу вхідну таблицю `cc_input`
+2. Поверніться до workflow в n8n
+3. Натисніть **"Execute Workflow"** у правому верхньому куті
+4. Дочекайтесь завершення виконання (індикатор прогресу на кожній ноді)
+5. Перевірте таблицю `cc_output` — там з'являться зпарсені дані
+
+---
+
+## 📊 Архітектура workflow
+
+### Схема роботи
 
 ```
-┌─────────────────────────┐
-│ When clicking           │
-│ 'Execute workflow'      │
-│ (Manual Trigger)        │
-└───────────┬─────────────┘
-            │
-            ▼
-┌─────────────────────────┐
-│ Get row(s) in sheet     │
-│ (Read URLs from         │
-│  cc_input)              │
-└───────────┬─────────────┘
-            │
-            ▼
-┌─────────────────────────┐
-│ Run an Actor            │
-│ (Apify Website          │
-│  Content Crawler)       │
-└───────────┬─────────────┘
-            │
-            ▼
-┌─────────────────────────┐
-│ Get dataset items       │
-│ (Fetch crawled data)    │
-└───────────┬─────────────┘
-            │
-            ▼
-┌─────────────────────────┐
-│ Append row in sheet     │
-│ (Save to cc_output)     │
-└─────────────────────────┘
+┌─────────────────────────────────────────────────────────────┐
+│                    ОСНОВНИЙ WORKFLOW                         │
+└─────────────────────────────────────────────────────────────┘
+
+[1] Manual Trigger
+      ↓
+[2] Google Sheets: Get rows (читає URL з cc_input)
+      ↓
+[3] Apify: Run Actor (запускає Website Content Crawler)
+      ↓
+[4] Apify: Get dataset items (отримує зібрані дані)
+      ↓
+[5] Google Sheets: Append rows (зберігає у cc_output)
+
+┌─────────────────────────────────────────────────────────────┐
+│                АЛЬТЕРНАТИВНИЙ WORKFLOW                       │
+└─────────────────────────────────────────────────────────────┘
+
+[6] Apify: Get dataset items (прямий доступ до існуючого датасету)
+      ↓
+[7] Google Sheets: Append rows (зберігає у cc_output)
 ```
 
-### Альтернативний workflow (Витягування з датасету)
+### Візуальна схема
 
-```
-┌─────────────────────────┐
-│ Get dataset items1      │
-│ (Direct dataset read)   │
-└───────────┬─────────────┘
-            │
-            ▼
-┌─────────────────────────┐
-│ Append row in sheet1    │
-│ (Save to cc_output)     │
-└─────────────────────────┘
-```
+![Схема workflow](схема.png)
 
-## Опис вузлів
+---
 
-### 1. When clicking 'Execute workflow'
-**Тип:** Manual Trigger
-**Призначення:** Ручний запуск workflow для початку процесу збору контенту.
+## 🔧 Технічні деталі
 
-**Вихід:**
-- Сигнал запуску workflow
+### Використані ноди
 
-### 2. Get row(s) in sheet
-**Тип:** Google Sheets
-**Призначення:** Читає список URL-адрес з вхідної таблиці Google Sheets.
+| Нода | Тип | Версія | Призначення |
+|------|-----|--------|-------------|
+| When clicking 'Execute workflow' | Manual Trigger | 1.0 | Ручний запуск |
+| Get row(s) in sheet | Google Sheets | 4.7 | Читання вхідних URL |
+| Run an Actor | Apify | 1.0 | Запуск веб-краулера |
+| Get dataset items | Apify Datasets | 1.0 | Отримання результатів |
+| Append row in sheet | Google Sheets | 4.7 | Збереження даних |
 
-**Параметри:**
-- Document ID: `18elhWrPQ_v9XgutP4nU23zNrTrOvhRNhgAlgFwkrwiU`
-- Sheet Name: `Лист1`
-- Table Name: `cc_input`
+### Конфігурація Apify Actor
 
-**Структура вхідної таблиці:**
-```
-| Website                          |
-|----------------------------------|
-| https://example.com/page1        |
-| https://example.com/page2        |
-| ...                              |
-```
+Workflow використовує [Website Content Crawler](https://apify.com/apify/website-content-crawler) з наступними параметрами:
 
-**Вхід:**
-- Trigger від Manual Trigger
-
-**Вихід:**
-- Масив рядків з URL-адресами веб-сайтів
-
-### 3. Run an Actor
-**Тип:** Apify
-**Призначення:** Запускає Apify Actor для парсингу веб-сайтів та витягування контенту.
-
-**Параметри:**
-- Actor ID: `aYG0l9s7dbB7j3gbS` (Website Content Crawler)
-- Memory: `4096 MB`
-
-**Конфігурація Actor:**
 ```json
 {
-  "aggressivePrune": false,
-  "blockMedia": true,
   "crawlerType": "playwright:adaptive",
-  "expandIframes": true,
+  "blockMedia": true,
   "saveMarkdown": true,
-  "startUrls": [
-    {
-      "url": "{{ $json.Website }}",
-      "method": "GET"
-    }
-  ],
   "removeCookieWarnings": true,
-  "removeElementsCssSelector": "nav, footer, script, style, noscript, svg...",
-  "readableTextCharThreshold": 100
+  "expandIframes": true,
+  "memory": 4096,
+  "readableTextCharThreshold": 100,
+  "removeElementsCssSelector": "nav, footer, script, style, noscript, svg, img[src^='data:'], [role=\"alert\"], [role=\"banner\"], [role=\"dialog\"]",
+  "proxyConfiguration": {
+    "useApifyProxy": true
+  }
 }
 ```
 
-**Основні налаштування:**
-- `blockMedia: true` — блокує завантаження медіа-файлів для швидшості
-- `saveMarkdown: true` — зберігає контент у форматі Markdown
-- `crawlerType: "playwright:adaptive"` — використовує адаптивний краулер з Playwright
-- `removeCookieWarnings: true` — видаляє попередження про cookies
-- `readableTextCharThreshold: 100` — мінімальна кількість символів для читабельного тексту
+#### Пояснення ключових параметрів:
 
-**Вхід:**
-- URL веб-сайту з Google Sheets
+| Параметр | Значення | Опис |
+|----------|----------|------|
+| `crawlerType` | `playwright:adaptive` | Використовує Playwright для JS сайтів |
+| `blockMedia` | `true` | Не завантажує зображення/відео (економія) |
+| `saveMarkdown` | `true` | Зберігає контент у Markdown форматі |
+| `removeCookieWarnings` | `true` | Видаляє cookie попередження |
+| `memory` | `4096` | Виділяє 4GB RAM для складних сайтів |
+| `removeElementsCssSelector` | CSS селектор | Видаляє nav, footer, scripts тощо |
 
-**Вихід:**
-- `defaultDatasetId` — ID датасету з зібраними даними
-- Метадані про виконання Actor
+### Структура даних
 
-### 4. Get dataset items
-**Тип:** Apify (Datasets)
-**Призначення:** Витягує зібрані дані з Apify Dataset.
+#### Вхідні дані (cc_input)
 
-**Параметри:**
-- Resource: `Datasets`
-- Dataset ID: `{{ $json.defaultDatasetId }}` (динамічно з попереднього кроку)
-- Limit: `500` елементів
+```csv
+Website
+https://techcrunch.com/2024/01/15/ai-news
+https://www.theverge.com/2024/1/15/tech-review
+https://example.com/blog/post-123
+```
 
-**Вхід:**
-- Dataset ID від Run an Actor
+#### Вихідні дані (cc_output)
 
-**Вихід:**
-- Масив елементів з даними:
-  ```json
-  {
-    "crawl": {
-      "loadedTime": "2024-09-16T12:30:00.000Z",
-      "loadedUrl": "https://example.com/page1"
-    },
-    "text": "Extracted content in markdown format...",
-    "metadata": { ... }
-  }
-  ```
+| loadedTime | loadedUrl | text |
+|------------|-----------|------|
+| 2024-09-16T12:30:45.123Z | https://techcrunch.com/2024/01/15/ai-news | # AI News\n\nLatest developments in artificial intelligence... |
+| 2024-09-16T12:31:12.456Z | https://www.theverge.com/2024/1/15/tech-review | # Tech Review\n\nComprehensive review of the latest... |
 
-### 5. Append row in sheet
-**Тип:** Google Sheets
-**Призначення:** Зберігає витягнуті дані у вихідну таблицю Google Sheets.
+---
 
-**Параметри:**
-- Document ID: `1tlNjUavcyCaNoehcOOdZUqt4ZHjcNjvdF-IYm_VJ0Xk`
-- Sheet Name: `Лист1`
-- Table Name: `cc_output`
-- Operation: `append`
+## ⚙️ Налаштування та оптимізація
 
-**Mapping колонок:**
+### Підвищення швидкості парсингу
+
+Якщо сайти прості (без JS), використовуйте Cheerio краулер:
+
 ```json
 {
-  "loadedTime": "{{ $json.crawl.loadedTime }}",
-  "loadedUrl": "{{ $json.crawl.loadedUrl }}",
-  "text": "{{ $json.text }}"
+  "crawlerType": "cheerio"
 }
 ```
 
-**Структура вихідної таблиці:**
+### Обробка JavaScript-heavy сайтів
+
+Для складних Single Page Applications:
+
+```json
+{
+  "crawlerType": "playwright:adaptive",
+  "waitForSelector": ".content-loaded",
+  "clientSideMinChangePercentage": 15
+}
 ```
-| loadedTime              | loadedUrl                    | text                          |
-|-------------------------|------------------------------|-------------------------------|
-| 2024-09-16T12:30:00.000Z| https://example.com/page1    | Markdown content here...      |
-| 2024-09-16T12:31:00.000Z| https://example.com/page2    | More content...               |
-```
 
-**Вхід:**
-- Дані від Get dataset items
+### Економія Apify кредитів
 
-**Вихід:**
-- Підтвердження успішного додавання рядків
-
-### 6. Get dataset items1 (Альтернативний варіант)
-**Тип:** Apify (Datasets)
-**Призначення:** Прямий доступ до конкретного датасету без запуску Actor.
-
-**Параметри:**
-- Resource: `Datasets`
-- Dataset ID: `CauuiPzhZfhEKj4FJ` (фіксований ID)
-- Limit: `500` елементів
-
-**Використання:** Цей вузол корисний для витягування даних з раніше створеного датасету без повторного запуску краулера.
-
-### 7. Append row in sheet1
-**Тип:** Google Sheets
-**Призначення:** Зберігає дані з альтернативного workflow у ту саму вихідну таблицю.
-
-**Параметри:** Ідентичні до **Append row in sheet**
-
-## Налаштування workflow
-
-### 1. Імпорт у n8n
-
-1. Відкрийте n8n
-2. Перейдіть до **Import from File**
-3. Завантажте файл `Урок-11.json`
-
-### 2. Створення вхідної таблиці Google Sheets
-
-1. Створіть нову Google Sheets таблицю з назвою `cc_input`
-2. Додайте заголовок стовпця: `Website`
-3. Заповніть стовпець URL-адресами веб-сайтів, які потрібно парсити:
-   ```
-   Website
-   https://example.com/article1
-   https://example.com/article2
-   https://news.site.com/news/123
-   ```
-4. Скопіюйте Document ID з URL таблиці
-
-### 3. Створення вихідної таблиці Google Sheets
-
-1. Створіть нову Google Sheets таблицю з назвою `cc_output`
-2. Додайте заголовки стовпців:
-   ```
-   loadedTime | loadedUrl | text
-   ```
-3. Скопіюйте Document ID з URL таблиці
-
-### 4. Підключення Google Sheets
-
-1. Відкрийте вузол **Get row(s) in sheet**
-2. Натисніть на **Credentials**
-3. Додайте **Google Sheets OAuth2 credentials**
-4. Вкажіть Document ID вхідної таблиці (`cc_input`)
-5. Повторіть для вузла **Append row in sheet** з Document ID вихідної таблиці (`cc_output`)
-
-### 5. Підключення Apify
-
-1. Створіть акаунт на https://apify.com/ (є безкоштовний план)
-2. Отримайте API токен в розділі **Settings → Integrations**
-3. Відкрийте вузол **Run an Actor**
-4. Натисніть на **Credentials**
-5. Додайте **Apify OAuth2 API credentials**
-6. Вставте API токен
-
-### 6. Налаштування Actor (опціонально)
-
-Ви можете змінити параметри Website Content Crawler:
-
-**Для швидшого парсингу:**
 ```json
 {
   "blockMedia": true,
   "saveScreenshots": false,
-  "saveHtml": false
+  "saveHtml": false,
+  "saveFiles": false,
+  "memory": 2048
 }
 ```
 
-**Для більш глибокого сканування:**
+### Глибоке сканування сайту
+
 ```json
 {
   "maxCrawlDepth": 3,
-  "useSitemaps": true
+  "useSitemaps": true,
+  "maxCrawlPages": 100
 }
 ```
 
-**Для парсингу JavaScript-сайтів:**
+### Планування автоматичних запусків
+
+Замініть Manual Trigger на Schedule Trigger:
+
+1. Видаліть ноду **"When clicking 'Execute workflow'"**
+2. Додайте ноду **"Schedule Trigger"**
+3. Налаштуйте розклад (Cron):
+   - Щодня о 9:00: `0 9 * * *`
+   - Кожні 6 годин: `0 */6 * * *`
+   - Щопонеділка о 8:00: `0 8 * * 1`
+
+### Обробка помилок
+
+Додайте Error Trigger для моніторингу:
+
+1. Додайте ноду **"Error Trigger"**
+2. Підключіть до Email або Telegram
+3. Налаштуйте повідомлення з деталями помилки
+
+---
+
+## 📝 Приклади використання
+
+### Приклад 1: Моніторинг конкурентів
+
+**Завдання:** Відстежувати нові статті у блозі конкурентів
+
+**Вхідна таблиця:**
+```
+Website
+https://competitor1.com/blog
+https://competitor2.com/blog
+https://competitor3.com/blog
+```
+
+**Результат:** Щоденний збір нового контенту для аналізу стратегії конкурентів
+
+### Приклад 2: Збір новин для AI
+
+**Завдання:** Зібрати новини з різних джерел для генерації власних статей
+
+**Вхідна таблиця:**
+```
+Website
+https://techcrunch.com/category/artificial-intelligence/
+https://www.theverge.com/ai-artificial-intelligence
+https://venturebeat.com/category/ai/
+```
+
+**Результат:** Структурований контент для подальшої обробки AI агентами
+
+### Приклад 3: Створення бази знань
+
+**Завдання:** Зібрати документацію з різних джерел для RAG системи
+
+**Вхідна таблиця:**
+```
+Website
+https://docs.python.org/3/library/
+https://docs.djangoproject.com/en/4.2/
+https://fastapi.tiangolo.com/
+```
+
+**Результат:** Текстова база для векторного індексування та семантичного пошуку
+
+---
+
+## 🛡️ Безпека та best practices
+
+### Захист credentials
+
+- ✅ Використовуйте n8n Credential Manager (credentials ніколи не зберігаються в JSON)
+- ✅ Регулярно ротуйте API ключі
+- ✅ Обмежуйте доступ до Google Sheets (тільки необхідні таблиці)
+- ❌ Ніколи не комітьте API ключі у репозиторій
+
+### Rate limiting
+
+Додайте затримки між запитами для великих batch операцій:
+
+1. Додайте ноду **"Wait"** після кожного запиту
+2. Налаштуйте затримку: 1-5 секунд
+3. Це допоможе уникнути блокування з боку сайтів
+
+### Дотримання robots.txt
+
+За замовчуванням workflow ігнорує robots.txt:
+
 ```json
 {
-  "crawlerType": "playwright:adaptive",
-  "waitForSelector": ".content-loaded"
+  "respectRobotsTxtFile": false
 }
 ```
 
-## Приклади використання
+Для етичного парсингу встановіть `true`.
 
-### Приклад 1: Збір новин з кількох сайтів
+---
 
-**Вхідна таблиця (cc_input):**
-```
-Website
-https://techcrunch.com/
-https://www.theverge.com/
-https://www.wired.com/
-```
+## 🐛 Troubleshooting
 
-**Результат:**
-Система зпарсить головні сторінки цих сайтів та збереже контент у форматі Markdown у вихідну таблицю.
+### ❌ Помилка: "Actor run failed"
 
-### Приклад 2: Моніторинг блогу конкурентів
-
-**Вхідна таблиця (cc_input):**
-```
-Website
-https://competitor.com/blog/post-1
-https://competitor.com/blog/post-2
-https://competitor.com/blog/post-3
-```
-
-**Результат:**
-Отримаєте структурований текст статей конкурентів для аналізу та генерації власного контенту.
-
-### Приклад 3: Збір даних для навчання AI
-
-**Використання:** Зберіть великий обсяг текстових даних для:
-- Навчання власних AI-моделей
-- Створення векторної бази знань
-- Формування контент-стратегії
-
-## Інтеграція з подальшими етапами
-
-Після збору даних у `cc_output` таблицю, ви можете:
-
-### Етап 3: Ранжування та аналіз
-- Додайте AI Agent для аналізу релевантності контенту
-- Використайте sentiment analysis для оцінки тональності
-- Створіть систему тегування за темами
-
-### Етап 4: Генерація контенту
-- Підключіть Multi-Agent System для створення статей
-- Використайте промпт-інженерію для адаптації стилю
-- Додайте перевірку на унікальність
-
-### Етап 5: Генерація медіа
-- Інтегруйте Fal.AI або DALL-E для зображень
-- Додайте text-to-speech для аудіо
-- Створіть відео-контент через Synthesia або подібні сервіси
-
-### Етап 6: Публікація
-- Підключіть API соціальних мереж (Twitter, Facebook, LinkedIn)
-- Налаштуйте WordPress API для публікації на сайт
-- Додайте Telegram Bot для розсилки
-
-## Troubleshooting
-
-### Помилка: "Actor run failed"
-
-**Проблема:** Apify Actor не може запуститися або падає під час виконання.
+**Симптоми:** Actor не запускається або падає під час виконання
 
 **Рішення:**
-1. Перевірте баланс Apify акаунту (достатньо коштів або free tier)
-2. Зменште параметр `memory` з 4096 до 2048 MB
-3. Перевірте, чи доступні URL-адреси (не заблоковані, не 404)
-4. Спробуйте змінити `crawlerType` з `playwright:adaptive` на `cheerio`
+1. Перевірте баланс Apify ([https://console.apify.com](https://console.apify.com))
+2. Зменшіть `memory` з 4096 до 2048 MB
+3. Перевірте доступність URL (не 404, не блоковано)
+4. Спробуйте змінити `crawlerType` на `cheerio`
+5. Увімкніть `debugMode: true` для діагностики
 
-### Помилка: "Failed to get dataset items"
+### ❌ Помилка: "Failed to get dataset items"
 
-**Проблема:** Не вдається отримати дані з датасету.
-
-**Рішення:**
-1. Перевірте, що Actor успішно завершився
-2. Переконайтесь, що Dataset ID правильний
-3. Збільште затримку між запуском Actor та читанням датасету (додайте Wait node)
-
-### Помилка: "Google Sheets: Insufficient permissions"
-
-**Проблема:** Немає прав доступу до Google Sheets.
+**Симптоми:** Датасет порожній або недоступний
 
 **Рішення:**
-1. Перевірте OAuth2 credentials для Google Sheets
-2. Переконайтесь, що додали правильний Document ID
-3. Перевірте права доступу до таблиці (потрібен Editor або Owner)
+1. Переконайтесь, що Actor успішно завершився (зелена галочка)
+2. Перевірте `defaultDatasetId` в output попередньої ноди
+3. Додайте ноду **"Wait"** на 10-30 секунд між Actor та Get dataset
+4. Перевірте права доступу Apify API token
 
-### Дані не зберігаються у Google Sheets
+### ❌ Помилка: "Google Sheets: Insufficient permissions"
 
-**Проблема:** Workflow виконується, але рядки не додаються.
-
-**Рішення:**
-1. Перевірте mapping колонок у вузлі **Append row in sheet**
-2. Переконайтесь, що структура таблиці відповідає mapping
-3. Перевірте, чи отримує вузол дані (подивіться на execution log)
-4. Спробуйте змінити `operation` з `append` на `appendOrUpdate`
-
-### Контент витягується не повністю
-
-**Проблема:** У таблиці з'являється неповний або порожній текст.
+**Симптоми:** Немає доступу до таблиці
 
 **Рішення:**
-1. Збільште `readableTextCharThreshold` до 50
-2. Налаштуйте `removeElementsCssSelector` для конкретного сайту
+1. Повторно авторизуйтесь у Google (OAuth може закінчитись)
+2. Перевірте права доступу до таблиці (потрібен Editor)
+3. Переконайтесь, що Document ID правильний
+4. Спробуйте створити нові credentials
+
+### ❌ Дані не зберігаються в Google Sheets
+
+**Симптоми:** Workflow виконується, але рядки не додаються
+
+**Рішення:**
+1. Перевірте execution log (клікніть на ноду після виконання)
+2. Переконайтесь, що mapping колонок відповідає структурі таблиці
+3. Перевірте, чи headers у таблиці збігаються: `loadedTime`, `loadedUrl`, `text`
+4. Спробуйте змінити operation на `appendOrUpdate`
+
+### ❌ Контент витягується неповністю або порожній
+
+**Симптоми:** У таблиці з'являється мало тексту або порожні рядки
+
+**Рішення:**
+1. Зменшіть `readableTextCharThreshold` до 50
+2. Видаліть або налаштуйте `removeElementsCssSelector` для конкретного сайту
 3. Додайте `waitForSelector` для динамічних сайтів
-4. Увімкніть `debugMode: true` для діагностики
-5. Перевірте, чи використовується правильний `crawlerType`
+4. Перевірте, чи потрібен `playwright` замість `cheerio`
+5. Увімкніть `debugMode: true` та перевірте HTML структуру сайту
 
-## Обмеження та рекомендації
+---
 
-### Обмеження Apify Free Tier:
-- $5 безкоштовних кредитів на місяць
-- Обмежена кількість concurrent runs
-- Максимальна тривалість run: 300 секунд
+## 💰 Ціноутворення та ліміти
 
-### Рекомендації:
-1. **Batch processing:** Групуйте URL-адреси для економії запусків
-2. **Incremental crawling:** Збирайте тільки нові сторінки
-3. **Rate limiting:** Додайте затримки між запитами
-4. **Monitoring:** Налаштуйте сповіщення про помилки через Email або Telegram
-5. **Backup:** Регулярно експортуйте дані з Google Sheets
+### Apify
 
-## Автор
+**Free Tier:**
+- $5 безкоштовних кредитів щомісяця
+- ~500 сторінок парсингу (залежить від складності)
+- Максимум 300 секунд на run
 
-**Розробник:** Сергій Щербаков
-**Email:** sergiyscherbakov@ukr.net
-**Telegram:** @s_help_2010
+**Starter Plan ($49/міс):**
+- $49 кредитів щомісяця
+- ~5000 сторінок парсингу
+- Необмежена тривалість runs
 
-## Ліцензія
+[Детальніше про тарифи Apify](https://apify.com/pricing)
 
-Цей шаблон надається "як є" для освітніх та комерційних цілей.
+### Google Sheets API
+
+- **Читання:** 300 запитів на хвилину
+- **Запис:** 60 запитів на хвилину
+- **Безкоштовно** для персонального використання
+
+[Квоти Google Sheets API](https://developers.google.com/sheets/api/limits)
+
+### n8n Cloud
+
+**Starter ($20/міс):**
+- 2,500 workflow виконань
+- 5 активних workflows
+
+**Pro ($50/міс):**
+- 10,000 workflow виконань
+- 10 активних workflows
+
+[Тарифи n8n](https://n8n.io/pricing)
+
+---
+
+## 📚 Додаткові ресурси
+
+### Документація
+
+- [Офіційна документація n8n](https://docs.n8n.io/)
+- [n8n Community Forum](https://community.n8n.io/)
+- [Apify Documentation](https://docs.apify.com/)
+- [Website Content Crawler Actor](https://apify.com/apify/website-content-crawler)
+- [Google Sheets API Reference](https://developers.google.com/sheets/api/reference/rest)
+
+### Навчальні матеріали
+
+- [n8n Workflows Examples](https://n8n.io/workflows/)
+- [Apify Academy](https://docs.apify.com/academy)
+- [Web Scraping Best Practices](https://docs.apify.com/academy/web-scraping-for-beginners)
+
+### Корисні інструменти
+
+- [CSS Selector Generator](https://chrome.google.com/webstore/detail/css-selector-generator-fo/)
+- [Apify Console](https://console.apify.com/)
+- [n8n Cloud Dashboard](https://app.n8n.cloud/)
+
+---
+
+## 🔄 Roadmap та розвиток
+
+Плануються наступні покращення:
+
+- [ ] Автоматичне визначення structure сайту
+- [ ] Інтеграція з векторними базами (Pinecone, Weaviate)
+- [ ] AI-аналіз зібраного контенту
+- [ ] Дедуплікація контенту
+- [ ] Sentiment analysis
+- [ ] Автоматична генерація тегів та категорій
+- [ ] Підтримка multi-language парсингу
+- [ ] Експорт у різні формати (JSON, CSV, PDF)
+
+---
+
+## 📄 Ліцензія
+
+Цей проєкт надається "як є" для освітніх та комерційних цілей. Ви вільні використовувати, модифікувати та розповсюджувати його.
+
+---
+
+## 🤝 Контакти та підтримка
+
+### Маєте питання?
+
+- 📧 **Email:** [sergiyscherbakov@ukr.net](mailto:sergiyscherbakov@ukr.net)
+- 💬 **Telegram:** [@s_help_2010](https://t.me/s_help_2010)
+
+### Потрібна допомога з налаштуванням?
+
+Я пропоную консультації з:
+- ⚙️ Налаштування n8n workflows
+- 🤖 Інтеграція AI агентів
+- 📊 Автоматизація бізнес-процесів
+- 🛠️ Custom розробка workflows
+
+### Знайшли баг або маєте ідею?
+
+Відкрийте Issue у цьому репозиторії або напишіть мені напряму.
+
+---
+
+## 💝 Дякую за використання!
+
+Якщо цей проєкт допоміг вам, буду вдячний за:
+- ⭐ Star цього репозиторію
+- 📢 Поширення інформації про проєкт
+- ☕ Донат на каву (адреса вище)
+
+---
+
+**Зроблено з ❤️ для спільноти automation enthusiasts**
+
+**🇺🇦 Proudly made in Ukraine**

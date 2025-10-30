@@ -6,13 +6,7 @@
 *.avi
 *.mov
 *.mkv
-
-# Image files
-*.png
-*.jpg
-*.jpeg
-*.gif
-*.webp
+*.webm
 
 # Large files
 *.zip
