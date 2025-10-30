@@ -1,5 +1,9 @@
 # Content Factory - n8n Workflow для автоматизації збору веб-контенту
 
+**Content Factory** — автоматизований workflow для збору та структурування веб-контенту через n8n, Apify та Google Sheets
+
+🔗 **Репозиторій:** [https://github.com/sergiyscherbakov/n8n-content-factory](https://github.com/sergiyscherbakov/n8n-content-factory)
+
 ---
 
 ## 👨‍💻 Автор
