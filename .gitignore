@@ -1,0 +1,18 @@
+# Text files (source info - not for repo)
+*.txt
+
+# Video files
+*.mp4
+*.avi
+*.mov
+*.mkv
+*.webm
+
+# Large files
+*.zip
+*.rar
+*.tar.gz
+
+# n8n
+node_modules/
+.env

@@ -1,0 +1,368 @@
+{
+  "name": "Урок-11",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -1408,
+        -896
+      ],
+      "id": "ede33744-537e-4152-933c-b19e1abac97f",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "18elhWrPQ_v9XgutP4nU23zNrTrOvhRNhgAlgFwkrwiU",
+          "mode": "list",
+          "cachedResultName": "cc_input",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/18elhWrPQ_v9XgutP4nU23zNrTrOvhRNhgAlgFwkrwiU/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Лист1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/18elhWrPQ_v9XgutP4nU23zNrTrOvhRNhgAlgFwkrwiU/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -1200,
+        -896
+      ],
+      "id": "bee66376-17fe-4b2a-b4d5-bb8ed8101657",
+      "name": "Get row(s) in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "3KcLK9U92W5WVyjk",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "actorId": {
+          "__rl": true,
+          "value": "aYG0l9s7dbB7j3gbS",
+          "mode": "list",
+          "cachedResultName": "Website Content Crawler (apify/website-content-crawler)",
+          "cachedResultUrl": "https://console.apify.com/actors/aYG0l9s7dbB7j3gbS/input"
+        },
+        "customBody": "={\n    \"aggressivePrune\": false,\n    \"blockMedia\": true,\n    \"clickElementsCssSelector\": \"[aria-expanded=\\\"false\\\"]\",\n    \"clientSideMinChangePercentage\": 15,\n    \"crawlerType\": \"playwright:adaptive\",\n    \"debugLog\": false,\n    \"debugMode\": false,\n    \"expandIframes\": true,\n    \"ignoreCanonicalUrl\": false,\n    \"ignoreHttpsErrors\": false,\n    \"keepUrlFragments\": false,\n    \"proxyConfiguration\": {\n        \"useApifyProxy\": true\n    },\n    \"readableTextCharThreshold\": 100,\n    \"removeCookieWarnings\": true,\n    \"removeElementsCssSelector\": \"nav, footer, script, style, noscript, svg, img[src^='data:'], [role=\\\"alert\\\"], [role=\\\"banner\\\"], [role=\\\"dialog\\\"], [role=\\\"alertdialog\\\"], [role=\\\"region\\\"][aria-label*=\\\"skip\\\" i], [aria-modal=\\\"true\\\"]\",\n    \"renderingTypeDetectionPercentage\": 10,\n    \"respectRobotsTxtFile\": false,\n    \"saveFiles\": false,\n    \"saveHtml\": false,\n    \"saveHtmlAsFile\": false,\n    \"saveMarkdown\": true,\n    \"saveScreenshots\": false,\n    \"startUrls\": [\n        {\n            \"url\": \"{{ $json.Website }}\",\n            \"method\": \"GET\"\n        }\n    ],\n    \"useSitemaps\": false\n}",
+        "memory": 4096,
+        "authentication": "apifyOAuth2Api"
+      },
+      "type": "@apify/n8n-nodes-apify.apify",
+      "typeVersion": 1,
+      "position": [
+        -992,
+        -896
+      ],
+      "id": "558c1fe2-1bb0-4f3d-bfe1-841fe734e8e6",
+      "name": "Run an Actor",
+      "credentials": {
+        "apifyOAuth2Api": {
+          "id": "PsA90SbvfMlQf5Y6",
+          "name": "Apify account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "Datasets",
+        "datasetId": "={{ $json.defaultDatasetId }}",
+        "limit": 500,
+        "authentication": "apifyOAuth2Api"
+      },
+      "type": "@apify/n8n-nodes-apify.apify",
+      "typeVersion": 1,
+      "position": [
+        -784,
+        -896
+      ],
+      "id": "74587cad-afbf-47c6-a21c-3e76489b2a50",
+      "name": "Get dataset items",
+      "credentials": {
+        "apifyOAuth2Api": {
+          "id": "PsA90SbvfMlQf5Y6",
+          "name": "Apify account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1tlNjUavcyCaNoehcOOdZUqt4ZHjcNjvdF-IYm_VJ0Xk",
+          "mode": "list",
+          "cachedResultName": "cc_output",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1tlNjUavcyCaNoehcOOdZUqt4ZHjcNjvdF-IYm_VJ0Xk/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Лист1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1tlNjUavcyCaNoehcOOdZUqt4ZHjcNjvdF-IYm_VJ0Xk/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "loadedTime": "={{ $json.crawl.loadedTime }}",
+            "loadedUrl": "={{ $json.crawl.loadedUrl }}",
+            "text": "={{ $json.text }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "loadedTime",
+              "displayName": "loadedTime",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "loadedUrl",
+              "displayName": "loadedUrl",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "text",
+              "displayName": "text",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -592,
+        -896
+      ],
+      "id": "76305029-4578-4337-9b6e-36be32f768b9",
+      "name": "Append row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "3KcLK9U92W5WVyjk",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "Запуск скрейпера",
+        "height": 256,
+        "width": 1136
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -1472,
+        -944
+      ],
+      "typeVersion": 1,
+      "id": "e5c2e52b-29cc-45af-9af7-aa595ff4c224",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "resource": "Datasets",
+        "datasetId": "=CauuiPzhZfhEKj4FJ",
+        "limit": 500,
+        "authentication": "apifyOAuth2Api"
+      },
+      "type": "@apify/n8n-nodes-apify.apify",
+      "typeVersion": 1,
+      "position": [
+        -784,
+        -624
+      ],
+      "id": "f6f8c33e-8793-47c5-a4d9-dced05025b9a",
+      "name": "Get dataset items1",
+      "credentials": {
+        "apifyOAuth2Api": {
+          "id": "PsA90SbvfMlQf5Y6",
+          "name": "Apify account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1tlNjUavcyCaNoehcOOdZUqt4ZHjcNjvdF-IYm_VJ0Xk",
+          "mode": "list",
+          "cachedResultName": "cc_output",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1tlNjUavcyCaNoehcOOdZUqt4ZHjcNjvdF-IYm_VJ0Xk/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Лист1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1tlNjUavcyCaNoehcOOdZUqt4ZHjcNjvdF-IYm_VJ0Xk/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "loadedTime": "={{ $json.crawl.loadedTime }}",
+            "loadedUrl": "={{ $json.crawl.loadedUrl }}",
+            "text": "={{ $json.text }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "loadedTime",
+              "displayName": "loadedTime",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "loadedUrl",
+              "displayName": "loadedUrl",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "text",
+              "displayName": "text",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -592,
+        -624
+      ],
+      "id": "50173611-5bf7-4e64-92fa-9fe285718be8",
+      "name": "Append row in sheet1",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "3KcLK9U92W5WVyjk",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "ВИТЯГУВАННЯ З ДАТАСЕТУ",
+        "height": 256,
+        "width": 1136
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -1472,
+        -656
+      ],
+      "typeVersion": 1,
+      "id": "9b4eb187-71f4-488d-8ff1-37e3b22b7472",
+      "name": "Sticky Note1"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Get row(s) in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet": {
+      "main": [
+        [
+          {
+            "node": "Run an Actor",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Run an Actor": {
+      "main": [
+        [
+          {
+            "node": "Get dataset items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get dataset items": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get dataset items1": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "6d306b9d-ed65-4d61-8e25-b3d21e9bf6f9",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "6cc36cfc3ba1501e800222f5e28c5190d11ec8cfd1d8e1340c28d89c8328890d"
+  },
+  "id": "OrqtHIgfYTzfMxZ2",
+  "tags": []
+}
